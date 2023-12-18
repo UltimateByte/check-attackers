@@ -10,11 +10,11 @@ send_abuse_emails="off" # on/off # WARNING: may expose sensitive information esp
 abuse_email_sender="abuse@yourdomain.tld" # You shall change to a real email address with an SPF rule authenticating your sender
 # Note log paths are valid for a Plesk server - tested on Debian only
 include_fail2ban_log="on" # on/off
-fail2ban_logpath='/var/log/fail2ban.log'
+fail2ban_logpath="/var/log/fail2ban.log"
 include_apache_log="off" # on/off
-apache_logpath='/var/www/vhosts/*/logs/*log'
+apache_logpath="/var/www/vhosts/*/logs/*log"
 include_ssh_log="off" # on/off
-ssh_logpath='/var/log/auth.log'
+ssh_logpath="/var/log/auth.log"
 
 # Get the name of this script for logging purposes
 selfname="$(basename "$(readlink -f "${BASH_SOURCE[0]}")")"
@@ -125,17 +125,17 @@ done
 
 function fetch_fail2ban_log {
     local ip=$1
-    grep "${ip}" "${fail2ban_logpath}"
+    grep "${ip}" ${fail2ban_logpath}
 }
 
 function fetch_apache_log {
     local ip=$1
-    grep -rnw "${ip}" "${apache_logpath}"
+    grep -rnw "${ip}" ${apache_logpath}
 }
 
 function fetch_ssh_log {
     local ip=$1
-    grep -rnw "${ip}" "${ssh_logpath}"
+    grep -rnw "${ip}" ${ssh_logpath}
 }
 
 # Send report for each abuse email
@@ -164,7 +164,7 @@ if [ "${send_abuse_emails}" == "on" ]; then
             # Actually send the mail
             echo -e "${mailcontent}" | mail -s "${mailsubject}" "${email}"
             # Log and display what is sent
-            fn_logecho "Sending Mail From: ${abuse_email_sender}" ; fn_logecho "Subject: ${mailsubject}" ; fn_logecho "To be sent to: ${email}" ; fn_logecho -e "${mailcontent}"
+            fn_logecho "Sending Mail From: ${abuse_email_sender}" ; fn_logecho "Subject: ${mailsubject}" ; fn_logecho "To be sent to: ${email}" ; fn_logecho "${mailcontent}"
         fi
     done
 fi
