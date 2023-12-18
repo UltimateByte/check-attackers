@@ -38,6 +38,17 @@ function extract_org_name {
         org_name=$(echo "${whois_data}" | grep -i "netname" | awk -F: '{print $2}' | xargs)
     fi
 
+    # Check for duplicated words in org_name and remove them
+    org_name=$(echo "${org_name}" | awk '
+    {
+        for (i=1; i<=NF; i++) {
+            if (!seen[$i]++) {
+                printf("%s%s", sep, $i)
+                sep=OFS
+            }
+        }
+    }')
+
     echo "${org_name:-Unknown}"
 }
 
