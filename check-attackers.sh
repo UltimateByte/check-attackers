@@ -168,24 +168,20 @@ if [ "${send_abuse_emails}" == "on" ]; then
                 else
                     mailcontent+="\nFail2Ban Log Entries:\nNot Included\n"
                 fi
-                fi
                 if [[ "${include_apache_log}" == "on" ]]; then
                     mailcontent+="\nApache Log Entries:\n$(fetch_apache_log "${ip}")\n"
                 else
                     mailcontent+="\nApache Log Entries:\nNot Included\n"
-                fi
                 fi
                 if [[ "${include_ssh_log}" == "on" ]]; then
                     mailcontent+="\nSSH Log Entries:\n$(fetch_ssh_log "${ip}")\n"
                 else
                     mailcontent+="\nSSH Log Entries:\nNot Included\n"
                 fi
-                fi
                 if [[ "${include_mail_log}" == "on" ]]; then
                     mailcontent+="\nMail Log Entries:\n$(fetch_mail_log "${ip}")\n"
                 else
                     mailcontent+="\nMail Log Entries:\nNot Included\n"
-                fi
                 fi
             done
             # Actually send the mail
