@@ -147,6 +147,11 @@ if [ "${send_abuse_emails}" == "on" ]; then
             mailcontent="From: ${abuse_email_sender}\n"  # Add your "From" email here
             mailcontent+="To: ${email}\n"
             mailcontent+="Subject: ${mailsubject}\n"
+            mailcontent+="Dear Abuse Team,\n\n"
+            mailcontent+="This automated message from the ${HOSTNAME} server is to inform you that we have detected attacks originating from your network. These attacks have triggered blocks on our side, as recorded in our fail2ban security logs.\n"
+            mailcontent+="If any of the listed IPs are associated with dedicated servers, they may be utilized for malicious purposes or compromised and used by hackers.\n"
+            mailcontent+="We have grouped all attacking IPs in the same email to assist you in identifying coordinated attacks.\n\n"
+            mailcontent+="We urge you to take appropriate actions to prevent further attacks from your network and contribute to a safer internet.\n\n"
             mailcontent+="Report for Abuse Email: ${email}\n"
             
             for ip in ${abuse_email_ips[${email}]}; do
