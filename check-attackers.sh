@@ -93,10 +93,10 @@ for ip in $(grep "Ban" /var/log/fail2ban.log | awk '{print $NF}' | sort | uniq);
     sleep "${sleep_time}"
 done
 
-# Output statistics
-fn_logecho "Provider IP Statistics:"
-printf "%s|%s\n" "${!ip_counts[@]}" "${ip_counts[@]}" | sort -t'|' -k2nr | while IFS='|' read -r org count; do
-    # Ensure count and total_ips are valid numbers
+# Iterate over the array keys (organization names) and print them along with their counts
+for org in "${!ip_counts[@]}"; do
+    printf "%s|%s\n" "$org" "${ip_counts[$org]}"
+done | sort -t'|' -k2nr | while IFS='|' read -r org count; do
     if [[ -n "${count}" ]] && [[ "${total_ips}" -gt 0 ]] && [[ "${count}" -gt 0 ]]; then
         if command -v bc &> /dev/null; then
             percentage=$(bc <<< "scale=2; ${count}*100/${total_ips}")
@@ -105,7 +105,6 @@ printf "%s|%s\n" "${!ip_counts[@]}" "${ip_counts[@]}" | sort -t'|' -k2nr | while
             stat_output="${org}: ${count} IPs"
         fi
     else
-        # Handle cases where count or total_ips is zero or invalid
         stat_output="${org}: ${count:-0} IPs (N/A)"
     fi
     fn_logecho "${stat_output}"
