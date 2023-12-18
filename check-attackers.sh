@@ -95,9 +95,10 @@ done
 
 # Output statistics
 fn_logecho "Provider IP Statistics:"
-for org in $(printf "%s\n" "${!ip_counts[@]}" | sort -nr); do
-    count="${ip_counts["$org"]}"
-
+while IFS= read -r line; do
+    org="${line%:*}"
+    count="${line##*:}"
+    
     # Ensure count and total_ips are valid numbers
     if [[ -n "${count}" ]] && [[ "${total_ips}" -gt 0 ]] && [[ "${count}" -gt 0 ]]; then
         if command -v bc &> /dev/null; then
@@ -111,4 +112,4 @@ for org in $(printf "%s\n" "${!ip_counts[@]}" | sort -nr); do
         stat_output="${org}: ${count:-0} IPs (N/A)"
     fi
     fn_logecho "${stat_output}"
-done
+done < <(printf "%s:%s\n" "${!ip_counts[@]}" "${ip_counts[@]}" | sort -t: -k2nr)
