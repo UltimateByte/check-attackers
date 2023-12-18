@@ -93,6 +93,9 @@ for ip in $(grep "Ban" /var/log/fail2ban.log | awk '{print $NF}' | sort | uniq);
     sleep "${sleep_time}"
 done
 
+# Output statistics
+fn_logecho "Provider IP Statistics:"
+
 # Iterate over the array keys (organization names) and print them along with their counts
 for org in "${!ip_counts[@]}"; do
     printf "%s|%s\n" "$org" "${ip_counts[$org]}"
