@@ -96,12 +96,19 @@ done
 # Output statistics
 fn_logecho "Provider IP Statistics:"
 for org in $(printf "%s\n" "${!ip_counts[@]}" | sort -nr); do
-    count="${ip_counts[$org]}"
-    if command -v bc &> /dev/null; then
-        percentage=$(bc <<< "scale=2; ${count}*100/${total_ips}")
-        stat_output="${org}: ${count} IPs (${percentage}%)"
+    count="${ip_counts["$org"]}"
+
+    # Ensure count and total_ips are valid numbers
+    if [[ -n "${count}" ]] && [[ "${total_ips}" -gt 0 ]] && [[ "${count}" -gt 0 ]]; then
+        if command -v bc &> /dev/null; then
+            percentage=$(bc <<< "scale=2; ${count}*100/${total_ips}")
+            stat_output="${org}: ${count} IPs (${percentage}%)"
+        else
+            stat_output="${org}: ${count} IPs"
+        fi
     else
-        stat_output="${org}: ${count} IPs"
+        # Handle cases where count or total_ips is zero or invalid
+        stat_output="${org}: ${count:-0} IPs (N/A)"
     fi
     fn_logecho "${stat_output}"
 done
