@@ -25,44 +25,61 @@ source ultimate-bash-api.sh
 declare -A ip_counts
 total_ips=0
 
-# Loop through the fail2ban log, extract unique IPs
-for ip in $(grep "Ban" /var/log/fail2ban.log | awk '{print $NF}' | sort | uniq); do
-    # Fetch whois data for the IP
-    whois_data=$(whois "${ip}")
+function fetch_whois_data {
+    local ip=$1
+    whois "${ip}"
+}
 
-    # First, try to extract OrgName. If not present, use netname as a fallback.
-    org_name=$(echo "${whois_data}" | grep -i "OrgName" | awk -F: '{print $2}' | xargs)
+function extract_org_name {
+    local whois_data=$1
+    local org_name=$(echo "${whois_data}" | grep -i "OrgName" | awk -F: '{print $2}' | xargs)
+    
     if [[ -z "${org_name}" ]]; then
         org_name=$(echo "${whois_data}" | grep -i "netname" | awk -F: '{print $2}' | xargs)
     fi
 
-    # Extract the first occurrence of an abuse email, fallback to any email if not found
-    abuse_email=$(echo "${whois_data}" | grep -i "abuse" | grep "@" | awk '{print $NF}' | head -n 1)
+    echo "${org_name:-Unknown}"
+}
+
+function extract_abuse_email {
+    local whois_data=$1
+    local abuse_email=$(echo "${whois_data}" | grep -i "abuse" | grep "@" | awk '{print $NF}' | head -n 1)
+    
     if [[ -z "${abuse_email}" ]]; then
         abuse_email=$(echo "${whois_data}" | grep -i "e-mail" | awk '{print $NF}' | head -n 1)
     fi
 
-    # Verbose Output and Logging
-    fn_logecho "${ip} - ${org_name} - Abuse Email: ${abuse_email}"
+    echo "${abuse_email:-Unknown}"
+}
+
+function process_ip {
+    local ip=$1
+    local whois_data=$(fetch_whois_data "${ip}")
+    local org_name=$(extract_org_name "${whois_data}")
+    local abuse_email=$(extract_abuse_email "${whois_data}")
 
     # Count IPs per Organization
-    if [[ -n "${org_name}" ]]; then
-        ((ip_counts["${org_name}"]++))
-        ((total_ips++))
-    fi
+    ((ip_counts["${org_name}"]++))
+    ((total_ips++))
 
-    # Sleep to avoid rate-limiting
+    # Verbose Output and Logging
+    fn_logecho "${ip} - ${org_name} - Abuse Email: ${abuse_email}"
+}
+
+# Main loop
+for ip in $(grep "Ban" /var/log/fail2ban.log | awk '{print $NF}' | sort | uniq); do
+    process_ip "${ip}"
     sleep "${sleep_time}"
 done
 
-# Sort providers by usage and output using fn_logecho
+# Output statistics
 fn_logecho "Provider IP Statistics:"
-for org in $(printf "%s\n" "${!ip_counts[@]}" | sort -k2 -nr); do
+for org in $(printf "%s\n" "${!ip_counts[@]}" | sort -nr | while read -r count org; do
     if command -v bc &> /dev/null; then
-        percentage=$(bc <<< "scale=2; ${ip_counts["$org"]}*100/${total_ips}")
-        stat_output="${org}: ${ip_counts["$org"]} IPs (${percentage}%)"
+        percentage=$(bc <<< "scale=2; $count*100/$total_ips")
+        stat_output="$org: $count IPs ($percentage%)"
     else
-        stat_output="${org}: ${ip_counts["$org"]} IPs"
+        stat_output="$org: $count IPs"
     fi
-    fn_logecho "${stat_output}"
+    fn_logecho "$stat_output"
 done
