@@ -15,6 +15,8 @@ include_apache_log="off" # on/off
 apache_logpath="/var/www/vhosts/*/logs/*log"
 include_ssh_log="off" # on/off
 ssh_logpath="/var/log/auth.log"
+includ_mail_log="off" # on/off
+mail_logpath="/var/log/maillog"
 
 # Get the name of this script for logging purposes
 selfname="$(basename "$(readlink -f "${BASH_SOURCE[0]}")")"
@@ -130,12 +132,17 @@ function fetch_fail2ban_log {
 
 function fetch_apache_log {
     local ip=$1
-    grep -rnw "${ip}" ${apache_logpath}
+    grep "${ip}" ${apache_logpath}
 }
 
 function fetch_ssh_log {
     local ip=$1
-    grep -rnw "${ip}" ${ssh_logpath}
+    grep "${ip}" ${ssh_logpath}
+}
+
+function fetch_mail_log {
+    local ip=$1
+    grep "${ip}" ${mail_logpath}
 }
 
 # Send report for each abuse email
@@ -164,6 +171,9 @@ if [ "${send_abuse_emails}" == "on" ]; then
                 fi
                 if [[ "${include_ssh_log}" == "on" ]]; then
                     mailcontent+="\nSSH Log Entries:\n$(fetch_ssh_log "${ip}")\n"
+                fi
+                if [[ "${include_mail_log}" == "on" ]]; then
+                    mailcontent+="\nMail Log Entries:\n$(fetch_mail_log "${ip}")\n"
                 fi
             done
             # Actually send the mail
