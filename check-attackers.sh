@@ -60,8 +60,12 @@ function extract_abuse_email {
         abuse_email=$(echo "${whois_data}" | grep -i "e-mail" | awk '{print $NF}' | head -n 1)
     fi
 
+    # Remove single quotes from the email address
+    abuse_email=$(echo "${abuse_email}" | tr -d "'")
+
     echo "${abuse_email:-Unknown}"
 }
+
 
 function process_ip {
     local ip=$1
