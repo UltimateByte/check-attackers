@@ -15,7 +15,7 @@ include_apache_log="off" # on/off
 apache_logpath="/var/www/vhosts/*/logs/*log"
 include_ssh_log="off" # on/off
 ssh_logpath="/var/log/auth.log"
-includ_mail_log="off" # on/off
+include_mail_log="off" # on/off
 mail_logpath="/var/log/maillog"
 
 # Get the name of this script for logging purposes
