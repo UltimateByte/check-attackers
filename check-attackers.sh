@@ -177,7 +177,7 @@ if [ "${send_abuse_emails}" == "on" ]; then
                 fi
             done
             # Actually send the mail
-            echo -e "${mailcontent}" | mail -s "${mailsubject}" "${email}"
+            echo -e "${mailcontent}" | sendmail -f "${abuse_email_sender}" "${email}"
             # Log and display what is sent
             fn_logecho "Sending Mail From: ${abuse_email_sender}" ; fn_logecho "Subject: ${mailsubject}" ; fn_logecho "To be sent to: ${email}" ; fn_logecho "${mailcontent}"
         fi
