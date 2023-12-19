@@ -25,8 +25,8 @@ Are you tired of seeing hundreds or thousands of attacks in your fail2ban logs, 
 
 ## Configuration
 
-- `sleep_time`: Time to wait between processing IPs to avoid rate limiting.
-- `whois_timeout`: Timeout for whois queries.
+- `sleep_time`: Time to wait between processing IPs to avoid rate limiting on WHOIS queries.
+- `whois_timeout`: Timeout for whois queries in order to wait less time in case of a timeout.
 - `send_abuse_emails`: Toggle to turn on/off the sending of abuse emails.
 - `abuse_email_sender`: Set your sending email address for proper delivery.
 - Log file paths: Enable or disable and set the correct paths for including your fail2ban, Apache, and SSH logs regarding the attacking IP.
