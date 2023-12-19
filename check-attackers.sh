@@ -43,6 +43,11 @@ function fetch_whois_data {
     timeout "${whois_timeout}" whois "${ip}"
 }
 
+function fetch_whois_data_apnic {
+    local ip=$1
+    timeout "${whois_timeout}" whois -h whois.apnic.net "${ip}"
+}
+
 function extract_org_name {
     local whois_data=$1
     local org_name
@@ -89,6 +94,10 @@ function process_ip {
     local abuse_email
 
     whois_data=$(fetch_whois_data "${ip}")
+    # Case where WHOIS shows "No match!!" which likely means APNIC will have more info than RIPE.
+    if echo "${whois_data}" | grep -q "No match!!"; then
+        whois_data=$(fetch_whois_data_apnic "${ip}")
+    fi
     org_name=$(extract_org_name "${whois_data}")
     abuse_email=$(extract_abuse_email "${whois_data}")
 
