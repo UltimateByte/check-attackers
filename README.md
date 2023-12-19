@@ -20,7 +20,7 @@ Are you tired of seeing hundreds or thousands of attacks in your fail2ban logs, 
 
 1. Clone the repository or download the script: `wget https://raw.githubusercontent.com/UltimateByte/check-attackers/main/check-attackers.sh`
 2. Make the script executable: `chmod +x check-attackers.sh`
-3. Configure the script settings in the top section of the script: `nano check_attackers.sh`or `vi check_attackers.sh`
+3. Configure the script settings in the top section of the script: `nano check_attackers.sh` or `vi check_attackers.sh`
 4. Run the script: `./check-attackers.sh`
 
 ## Configuration
