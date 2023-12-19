@@ -69,7 +69,8 @@ function extract_org_name {
 function extract_abuse_email {
     local whois_data=$1
     local abuse_email
-    abuse_email=$(echo "${whois_data}" | grep -i "abuse" | grep "@" | awk '{print $NF}' | head -n 1)
+    # Handle special case with grep -v, to make sure we don't fall on RIPE email address or "remarks" line ending with "is invalid"
+    abuse_email=$(echo "${whois_data}" | grep -i "abuse" | grep "@" | grep -v "search-apnic-not-arin@apnic.net" | grep -v "remarks:" | awk '{print $NF}') | head -n 1)
     
     if [[ -z "${abuse_email}" ]]; then
         abuse_email=$(echo "${whois_data}" | grep -i "e-mail" | awk '{print $NF}' | head -n 1)
