@@ -14,7 +14,7 @@ Are you tired of seeing hundreds or thousands of attacks in your fail2ban logs, 
 - fail2ban
 - whois (for IP lookups)
 - bc (for calculations)
-- Properly configured mail system for sending emails
+- Properly configured mail system for sending emails & allowed sendmail command
 
 ## Installation and Usage
 
