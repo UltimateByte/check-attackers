@@ -1,6 +1,7 @@
 #!/bin/bash
 # Description: Check attackers based on your fail2ban log
 # Author: Robin LABADIE
+# AI Tool: ChatGPT - GPT4 helped building this script (as a test & proof of concept)
 # Author website: www.lrob.fr
 
 # Settings
